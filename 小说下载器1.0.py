@@ -1,33 +1,33 @@
-进口tkinter如同坦克
-从tkinter进口ttk，消息框
-进口穿线
-从selenium . 选择进口选择
-从硒进口网络驱动
-从硒。网络驱动.普通的进口经过
-从硒。网络驱动.普通的.键进口键
-从硒。网络驱动.支持.用户界面进口WebDriverWait
-从硒。网络驱动.支持进口预期_条件如同欧盟委员会(欧洲佣金)
-进口操作系统(操作系统)
-从lxml进口etree
+import tkinter as tk
+from tkinter import ttk, messagebox
+import threading
+from selenium.webdriver.chrome.options import Options
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import os
+from lxml import etree
 
-班级NovelDownloader:
-    极好的 __init__(自我，根):
-自我。根=根
-自我。根.标题("小说下载器")
-自我。根.几何学(" 800x600 ")
+class NovelDownloader:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("小说下载器")
+        self.root.geometry("800x600")
 
-自我。设置_样式()
-自我。创建_小部件()
-自我。章 = {}
+        self.setup_styles()
+        self.create_widgets()
+        self.chapters = {}
 
-    极好的 设置_样式(自己):
-风格=ttk .风格()
-风格。配置(t框架'，背景=“白色”)
-风格。配置(特拉贝尔，背景=“白色”，字体=(阿里亚尔, 13)，前景=海军)
-风格。配置('按钮'，背景=“浅蓝色”，字体=(阿里亚尔, 13)，前景=绿色)
-风格。配置('复选框按钮'，背景=“白色”，字体=(阿里亚尔, 13))
-风格。配置('列表框'，背景=“白色”，字体=(阿里亚尔, 12))
-风格。配置('文本'，背景=“白色”，字体=(阿里亚尔, 13))
+    def setup_styles(self):
+        style = ttk.Style()
+        style.configure('TFrame', background='white')
+        style.configure('TLabel', background='white', font=('Arial', 13), foreground='navy')
+        style.configure('TButton', background='lightblue', font=('Arial', 13), foreground='green')
+        style.configure('TCheckbutton', background='white', font=('Arial', 13))
+        style.configure('TListbox', background='white', font=('Arial', 12))
+        style.configure('TText', background='white', font=('Arial', 13))
 
     def create_widgets(self):
         ttk.Label(self.root, text="请输入小说名称:", font=('Arial', 16)).pack(pady=10)
@@ -56,8 +56,8 @@
         self.listbox.bind("<<ListboxSelect>>", self.show_chapter_content)
 
     def create_chapter_text_frame(self):
-chapter_text_frame = ttk框架(self.root)
-chapter _ text _ frame . pack(side = tk。对，fill=tk。两者都有，expand=True，padx=10)
+        chapter_text_frame = ttk.Frame(self.root)
+        chapter_text_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=10)
 
         chapter_text_scrollbar = ttk.Scrollbar(chapter_text_frame)
         chapter_text_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
@@ -68,16 +68,16 @@ chapter _ text _ frame . pack(side = tk。对，fill=tk。两者都有，expand=
 
         chapter_text_scrollbar.config(command=self.chapter_text.yview)
 
-def搜索_小说(自我):
-keyword = self.entry.get()
+    def search_novel(self):
+        keyword = self.entry.get()
 
-如果不是关键字:
-messagebox.showwarning("警告", "请输入小说名称")
-返回
+        if not keyword:
+            messagebox.showwarning("警告", "请输入小说名称")
+            return
 
-穿线Thread(target=self.crawl_novel，args=(keyword，).开始()
+        threading.Thread(target=self.crawl_novel, args=(keyword,)).start()
 
-定义更新_显示(自身):
+    def update_display(self):
         self.listbox.delete(0, tk.END)
         self.listbox.insert(tk.END, *self.chapters.keys())
 
@@ -89,75 +89,75 @@ messagebox.showwarning("警告", "请输入小说名称")
     def crawl_novel(self, keyword):
         options = Options()
         options.headless = True
-options . add _ argument('-no-sandbox ')
-options . add _ argument('-disable-dev-shm-usage ')
-选项。add _ argument("-window-size = 1920，1080 ")
-选项。add _ argument(" user-agent = ' Mozilla/5.0(Windows NT 10.0；win 64x 64)apple WebKit/537.36(KHTML，像壁虎一样)Chrome/95。0 .4638 .69 Safari/537.36 '”)
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-dev-shm-usage')
+        options.add_argument("--window-size=1920,1080")
+        options.add_argument("user-agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36'")
 
-driver = webdriver .铬(选项=选项)
+        driver = webdriver.Chrome(options=options)
 
-尝试:
-司机. get(" https://www .bige 3 .抄送/")
-搜索输入=驱动程序。find _ element(按.XPATH，"/html/body/div[4]/div[1]/div[2]/form/input[1]")
-搜索输入发送关键字(关键字)
-搜索输入发送关键字(键。回车)
-WebDriverWait(驱动程序,10)。直到(欧共体。element _ located的存在性(.XPATH，"/html/body/div[5]/div/div/div/div[2]/H4/a "))
+        try:
+            driver.get("https://www.bige3.cc/")
+            search_input = driver.find_element(By.XPATH, "/html/body/div[4]/div[1]/div[2]/form/input[1]")
+            search_input.send_keys(keyword)
+            search_input.send_keys(Keys.ENTER)
+            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "/html/body/div[5]/div/div/div/div/div[2]/h4/a")))
 
-元素=驱动因素。查找_元素（按。XPATH，"/html/body/div[5]/div/div/div/div[2]/H4/a ")
-如果不是元素:
-messagebox.showinfo("提示", "没有找到相关小说")
-返回
+            elements = driver.find_elements(By.XPATH, "/html/body/div[5]/div/div/div/div/div[2]/h4/a")
+            if not elements:
+                messagebox.showinfo("提示", "没有找到相关小说")
+                return
 
-对于元素中的元素:
-element.click()
-司机。切换到。车窗(驾驶员。窗口句柄[-1])
-WebDriverWait(驱动程序,10)。直到(欧共体。element _ located的存在性(.XPATH，"//*[@class='listmain']/dl/dd/a ")))
+            for element in elements:
+                element.click()
+                driver.switch_to.window(driver.window_handles[-1])
+                WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "//*[@class='listmain']/dl/dd/a")))
 
-章节=驱动程序。查找_元素（按。XPATH，"//*[@ class = ' listmain ']/dl/DD/a ")[0]
-chapter.click()
-虽然正确:
-WebDriverWait(驱动程序,10)。直到（欧共体.元素_已定位的存在性(.XPATH，"//*[@ id = ' read ']/div[5]/div[3]/h1 "))
-章节标题=司机查找元素(按. XPATH，"//*[@ id = ' read ']/div[5]/div[3]/h1 ")
-章_内容=驱动程序find _ element(按。XPATH，"//*[@id='chaptercontent']")
-html =章节_内容get _ attribute(" innerHTML ")。
-树= etreeHTML(HTML)
-content = tree.xpath("string。)")
-章节标题=章节标题。文字。替换("、"、")
-content = content.replace("无弹窗,更新快,免费阅读!", "")
-content = content.replace("请收藏本站:https://www.bige3.cc .笔趣阁手机版:https://m.bige3.cc "，"")
-内容=内容。替换(“和点此报错"《加入书签》"、" )
+                chapter = driver.find_elements(By.XPATH, "//*[@class='listmain']/dl/dd/a")[0]
+                chapter.click()
+                while True:
+                    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "//*[@id='read']/div[5]/div[3]/h1")))
+                    chapter_title = driver.find_element(By.XPATH, "//*[@id='read']/div[5]/div[3]/h1")
+                    chapter_content = driver.find_element(By.XPATH, "//*[@id='chaptercontent']")
+                    html = chapter_content.get_attribute("innerHTML")
+                    tree = etree.HTML(html)
+                    content = tree.xpath("string(.)")
+                    chapter_title_text = chapter_title.text.replace("、", "")
+                    content = content.replace("无弹窗，更新快，免费阅读！", "")
+                    content = content.replace("请收藏本站：https://www.bige3.cc。笔趣阁手机版：https://m.bige3.cc", "")
+                    content = content.replace("『点此报错』『加入书签』", "")
 
-if self.save_checkbox_var.get():
-book _ dir = OS .路径。加入（操作系统getcwd()，关键字)
-如果不是os.path.exists(book_dir):
-os.makedirs(book_dir)
+                    if self.save_checkbox_var.get():
+                        book_dir = os.path.join(os.getcwd(), keyword)
+                        if not os.path.exists(book_dir):
+                            os.makedirs(book_dir)
 
-chapter _ path = OS。路径。join(book _ dir，f"{chapter_title_text} .txt”)
-用打开(chapter_path，" w "，encoding="utf-8 ")作为女：
-f .写（内容)
+                        chapter_path = os.path.join(book_dir, f"{chapter_title_text}.txt")
+                        with open(chapter_path, "w", encoding="utf-8") as f:
+                            f.write(content)
 
-自我。章节[章节标题正文]=内容
-self.update_display()
+                    self.chapters[chapter_title_text] = content
+                    self.update_display()
 
-尝试:
-WebDriverWait(驱动程序,10)。直到可点击的。XPATH，'//div[@ class = " read page page down "]/a[@ id = " Pb _ next "]'))
-next _ button =驱动程序查找元素（按. XPATH，'//div[@ class = " read page page down "]/a[@ id = " Pb _ next "]')
-next_button.click()
-除了:
-破裂
+                    try:
+                        WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//div[@class="Readpage pagedown"]/a[@id="pb_next"]')))
+                        next_button = driver.find_element(By.XPATH, '//div[@class="Readpage pagedown"]/a[@id="pb_next"]')
+                        next_button.click()
+                    except:
+                        break
 
-driver.back()
+                driver.back()
 
-例外情况为e:
-messagebox.showinfo("提示", "运行完毕")
-最后:
-driver.close()
-driver.quit()
+        except Exception as e:
+            messagebox.showinfo("提示", "运行完毕")
+        finally:
+            driver.close()
+            driver.quit()
 
-if self.save_checkbox_var.get():
-messagebox.showinfo("提示", "小说下载完成")
+            if self.save_checkbox_var.get():
+                messagebox.showinfo("提示", "小说下载完成")
 
-if __name__ == "__main__ ":
-root = tk。Tk()
-app = NovelDownloader(root)
-根.主循环()
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = NovelDownloader(root)
+    root.mainloop()
